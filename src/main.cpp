@@ -1,3 +1,6 @@
+/*
+ * 	Author : Rohit Roy
+ */
 #include "structure.h"
 #include <iostream>
 

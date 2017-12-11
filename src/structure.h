@@ -32,7 +32,7 @@ struct Coordinate {
 struct SpaceMatrix {
 	int* matrix;
 	int size;
-	float resolution;-
+	float resolution;
 };
 
 struct MoleculeFeatures {
