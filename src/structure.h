@@ -10,10 +10,9 @@
 #include <fstream>
 
 // Defining the necessary macros:
-#define FILE_IO_ERROR(filename) std::cout<<"FILE I/O ERROR :"<<__LINE__<<" : "<<__FILE__<<": \nTHE FOLLOWING FILE COULD NOT BE OPENED :"<<(filename)<<std::endl
+#define FILE_IO_ERROR(thefilename) std::cout<<"FILE I/O ERROR :"<<__LINE__<<" : "<<__FILE__<<": \nTHE FOLLOWING FILE COULD NOT BE OPENED :"<<(thefilename)<<std::endl
 #define ALLOC_ERROR() std::cout<<"MEMORY ALLOCATION ERROR :"<<__LINE__<<" : "<<__FILE__<<": \nTHERE WAS AN ERROR IN ALLOCATING HEAP MEMORY"<<std::endl
 #define NULL_PTR_ERROR() std::cout<<"NULL POINTER REFERENCING ERROR :"<<__LINE__<<" : "<<__FILE__<<": \n THERE WAS AN ATTEMPT TO DEREFERENCE A NULL POINTER " << std::endl
-
 enum class AtomType {
 	UNDEF = -1
 };
@@ -33,6 +32,7 @@ struct Coordinate {
 struct SpaceMatrix {
 	int* matrix;
 	int size;
+	float resolution;-
 };
 
 struct MoleculeFeatures {
@@ -114,7 +114,7 @@ public:
 	int readPDBToMolecule(std::string filename);
 	int writeMoleculeToPDB(std::string filename);
 	MoleculeFeatures alignMolecule();
-	SpaceMatrix* createSpaceMatrix(int size);
+	SpaceMatrix* createSpaceMatrix(int size, MoleculeFeatures features, int value);
 };
 
 
