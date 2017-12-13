@@ -25,8 +25,6 @@ bool check_neighbours(int thickness, int* matrix, int size, int x, int y, int z,
 
 // Set the surface molecules to the value 1
 void generate_surface(SpaceMatrix* space, int thickness, int core_value = 1) {
-	//checking the outer elements
-
 	// checking the inner elements
 	for (int x = 1; x < space->size-1; x++) {
 		for (int y = 1; y < space->size-1; y++) {
@@ -40,4 +38,5 @@ void generate_surface(SpaceMatrix* space, int thickness, int core_value = 1) {
 		}
 	}
 
+	//checking the outer elements
 }
