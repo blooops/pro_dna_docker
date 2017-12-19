@@ -7,7 +7,6 @@
 #pragma once
 
 #include <string>
-#include <fstream>
 
 // Defining the necessary macros:
 #define FILE_IO_ERROR(thefilename) std::cout<<"FILE I/O ERROR :"<<__LINE__<<" : "<<__FILE__<<": \nTHE FOLLOWING FILE COULD NOT BE OPENED :"<<(thefilename)<<std::endl
@@ -51,11 +50,11 @@ public:
 	~Atom();
 	Atom(Coordinate coords, int id, AtomType type);
 
-	Coordinate getCoordinates();
+	Coordinate getCoordinates() const;
 	void setCoordinates(Coordinate coords);
-	int getId();
+	int getId() const;
 	void setId(int id);
-	AtomType getAtomType();
+	AtomType getAtomType() const;
 	void setAtomType(AtomType type);
 };
 
@@ -70,20 +69,21 @@ class Residue {
 
 public:
 	Residue();
-	Residue(int upperAtomIndex, int id, int lowerAtomIndex, ResidueType type, Atom* atoms);
+	Residue(int upperAtomIndex, int id, int lowerAtomIndex, ResidueType type,
+			Atom* atoms);
 	~Residue();
-	int getUpperAtomIndex();
+	int getUpperAtomIndex() const;
 	void setUpperAtomIndex(int index);
-	int getLowerAtomIndex();
+	int getLowerAtomIndex() const;
 	void setLowerAtomIndex(int index);
-	int getId();
+	int getId() const;
 	void setId(int id);
-	ResidueType getResidueType();
+	ResidueType getResidueType() const;
 	void setResidueType(ResidueType type);
 	Coordinate getCenter();
 	void setCenter();
 	int getNumberOfAtoms();
-	Atom* getAtoms();
+	Atom* getAtoms() const;
 	void setAtoms(Atom* atoms);
 };
 
@@ -97,24 +97,25 @@ class Molecule {
 
 public:
 	Molecule();
-	Molecule(Atom* atoms, Residue* residues, int nAtoms, int nResidues, MoleculeType type);
+	Molecule(Atom* atoms, Residue* residues, int nAtoms, int nResidues,
+			MoleculeType type);
 	~Molecule();
-	MoleculeType getMoleculeType();
+	MoleculeType getMoleculeType() const;
 	void setMoleculeType(MoleculeType type);
-	int getNumberOfResidues();
+	int getNumberOfResidues() const;
 	void setNumberOfResidues(int nResidues);
-	int getNumberOfAtoms();
+	int getNumberOfAtoms() const;
 	void setNumberOfAtoms(int nAtoms);
-	Atom* getAtoms();
-	Residue* getResidues();
+	Atom* getAtoms() const;
+	Residue* getResidues() const;
 	void setAtoms(Atom* atoms);
 	void setResidues(Residue* residues);
-	Coordinate getCenter();
+	Coordinate getCenter() const;
 	void setCenter();
 	int readPDBToMolecule(std::string filename);
 	int writeMoleculeToPDB(std::string filename);
 	MoleculeFeatures alignMolecule();
-	SpaceMatrix* createSpaceMatrix(int size, MoleculeFeatures features, int value);
+	SpaceMatrix* createSpaceMatrix(int size, MoleculeFeatures features,
+			int value);
 };
-
 
