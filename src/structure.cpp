@@ -4,9 +4,10 @@
  *      Author: Rohit Roy
  */
 
-#include "structure.h"
 #include <iostream>
 #include <algorithm>
+#include <fstream>
+#include "structure.h"
 
 // Function definitions for all Atom class public functions/constructors/destructors:
 
@@ -26,7 +27,7 @@ Atom::~Atom() {
 	;
 }
 
-Coordinate Atom::getCoordinates() {
+Coordinate Atom::getCoordinates() const {
 	return m_coords;
 }
 
@@ -34,7 +35,7 @@ void Atom::setCoordinates(Coordinate coords) {
 	m_coords = coords;
 }
 
-int Atom::getId() {
+int Atom::getId() const {
 	return m_id;
 }
 
@@ -42,7 +43,7 @@ void Atom::setId(int id) {
 	m_id = id;
 }
 
-AtomType Atom::getAtomType() {
+AtomType Atom::getAtomType() const {
 	return m_type;
 }
 
@@ -74,7 +75,7 @@ Residue::~Residue() {
 	;
 }
 
-int Residue::getUpperAtomIndex() {
+int Residue::getUpperAtomIndex() const {
 	return m_upperAtomIndex;
 }
 
@@ -82,7 +83,7 @@ void Residue::setUpperAtomIndex(int index) {
 	m_upperAtomIndex = index;
 }
 
-int Residue::getLowerAtomIndex() {
+int Residue::getLowerAtomIndex() const {
 	return m_lowerAtomIndex;
 }
 
@@ -90,7 +91,7 @@ void Residue::setLowerAtomIndex(int index) {
 	m_lowerAtomIndex = index;
 }
 
-int Residue::getId() {
+int Residue::getId() const {
 	return m_id;
 }
 
@@ -98,7 +99,7 @@ void Residue::setId(int id) {
 	m_id = id;
 }
 
-ResidueType Residue::getResidueType() {
+ResidueType Residue::getResidueType() const {
 	return m_type;
 
 }
@@ -132,7 +133,7 @@ int Residue::getNumberOfAtoms() {
 	return m_upperAtomIndex - m_lowerAtomIndex + 1;
 }
 
-Atom* Residue::getAtoms() {
+Atom* Residue::getAtoms() const {
 	return m_atoms;
 }
 
@@ -169,7 +170,7 @@ Molecule::~Molecule() {
 	m_residues = nullptr;
 }
 
-MoleculeType Molecule::getMoleculeType() {
+MoleculeType Molecule::getMoleculeType() const {
 	return m_type;
 }
 
@@ -177,7 +178,7 @@ void Molecule::setMoleculeType(MoleculeType type) {
 	m_type = type;
 }
 
-int Molecule::getNumberOfResidues() {
+int Molecule::getNumberOfResidues() const {
 	return m_numberOfResidues;
 }
 
@@ -185,7 +186,7 @@ void Molecule::setNumberOfResidues(int nResidues) {
 	m_numberOfResidues = nResidues;
 }
 
-int Molecule::getNumberOfAtoms() {
+int Molecule::getNumberOfAtoms() const {
 	return m_numberOfAtoms;
 }
 
@@ -193,15 +194,15 @@ void Molecule::setNumberOfAtoms(int nAtoms) {
 	m_numberOfAtoms = nAtoms;
 }
 
-Coordinate Molecule::getCenter() {
+Coordinate Molecule::getCenter() const {
 	return m_center;
 }
 
-Atom* Molecule::getAtoms() {
+Atom* Molecule::getAtoms() const {
 	return m_atoms;
 }
 
-Residue* Molecule::getResidues() {
+Residue* Molecule::getResidues() const {
 	return m_residues;
 }
 
@@ -237,7 +238,7 @@ int Molecule::readPDBToMolecule(std::string filename) {
 
 	// First create file streams and ensure that they work:
 	std::ifstream stream(filename);
-	if (stream) {
+	if (stream) { /////////////////////////////////////////////////////////////////////////////////////////////////
 		FILE_IO_ERROR(filename);
 		stream.close();
 		return -1;
@@ -255,12 +256,14 @@ int Molecule::readPDBToMolecule(std::string filename) {
 	if (m_atoms != nullptr && m_residues == nullptr) {
 		ALLOC_ERROR();
 		delete[] m_atoms;
+		m_atoms = nullptr;
 		return -1;
 	}
 
 	else if (m_atoms == nullptr && m_residues != nullptr) {
 		ALLOC_ERROR();
 		delete[] m_residues;
+		m_residues = nullptr;
 		return -1;
 	}
 
@@ -364,7 +367,8 @@ MoleculeFeatures Molecule::alignMolecule() {
 
 }
 
-SpaceMatrix* Molecule::createSpaceMatrix(int size, MoleculeFeatures features, int value) {
+SpaceMatrix* Molecule::createSpaceMatrix(int size, MoleculeFeatures features,
+		int value) {
 	// Check that the atoms is initialized properly
 	if (m_atoms == nullptr) {
 		NULL_PTR_ERROR();
@@ -393,7 +397,7 @@ SpaceMatrix* Molecule::createSpaceMatrix(int size, MoleculeFeatures features, in
 	float resolution = features.diameter / size;
 	space->resolution = resolution;
 
-	for(int i = 0; i < m_numberOfAtoms; i++) {
+	for (int i = 0; i < m_numberOfAtoms; i++) {
 		Coordinate t_coords = m_atoms[i].getCoordinates();
 		t_coords.x /= resolution;
 		t_coords.y /= resolution;
