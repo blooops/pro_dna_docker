@@ -7,6 +7,9 @@
 #include "structure.h"
 #include "log.h"
 
+#define PROTEIN_FILL_VALUE 1
+#define DNA_FILL_VALUE -15
+
 class Docker {
 private:
 	Molecule* m_protein;
@@ -19,7 +22,6 @@ private:
 	bool m_checkFlag;
 	int m_matrixLength;
 	bool m_logFlag;
-	Logger m_log;
 	MoleculeFeatures m_proteinFeatures;
 	MoleculeFeatures m_dnaFeatures;
 
@@ -31,7 +33,7 @@ public:
 	void setInitFlag(bool flag);
 	bool getInitFlag() const;
 	int getMatrixLength();
-	void initProcedure(std::string proteinFileName, std::string dnaFileName);
+	void initProcedure(std::string proteinFileName, std::string dnaFileName, int size);
 	void startTimer();
 	void endTimer();
 	void logProcedureDetails(std::string filename);

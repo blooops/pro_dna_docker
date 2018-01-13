@@ -49,14 +49,15 @@ int Docker::getMatrixLength() {
 	return m_matrixLength;
 }
 
-void Docker::initProcedure(std::string proteinFileName,
-		std::string dnaFileName) {
+void Docker::initProcedure(std::string proteinFileName, std::string dnaFileName,
+		int size) {
 	// Initialize everything to get ready for the docking procedure to begin.
 
 	m_protein = new Molecule;
 	m_dna = new Molecule;
 
 	if (m_protein == nullptr || m_dna == nullptr) {
+		ALLOC_ERROR();
 		m_initFlag = false;
 		return;
 	}
@@ -82,8 +83,65 @@ void Docker::initProcedure(std::string proteinFileName,
 		return;
 	}
 
-	// Create Space Matrices (TODO)
+	// Create Space Matrices
+	m_dnaMatrix = new SpaceMatrix;
+	m_proteinMatrix = new SpaceMatrix;
+	if (m_dnaMatrix == nullptr || m_proteinMatrix == nullptr) {
+		ALLOC_ERROR();
+		delete m_dnaMatrix;
+		delete m_proteinMatrix;
+		m_checkFlag = false;
+		m_initFlag = false;
+		return;
+	}
 
+	// create the space discretized matrices:(TODO)
+	float diameter = std::max(m_dnaFeatures.diameter,
+			m_proteinFeatures.diameter);
+	float resolution = diameter / size;
+
+	m_dnaMatrix->resolution = m_proteinMatrix->resolution = resolution;
+	m_dnaMatrix->size = m_proteinMatrix->size = size;
+
+	m_dnaMatrix->matrix = new int[size * size * size];
+	m_proteinMatrix->matrix = new int[size * size * size];
+
+	if(m_dnaMatrix == nullptr || m_proteinMatrix == nullptr) {
+		ALLOC_ERROR();
+		delete[] m_dnaMatrix->matrix;
+		delete[] m_proteinMatrix->matrix;
+		m_initFlag = m_checkFlag = false;
+		return;
+	}
+
+	// Allocation was fine. Initialize matrices with 0
+	for(int i=0; i<size*size*size; i++)
+		m_dnaMatrix->matrix[i] = m_proteinMatrix->matrix[i] = 0;
+
+	// Assign fill values to locations of atoms in the molecules
+	for(int i=0; i<m_protein->getNumberOfAtoms(); i++) {
+		int x,y,z;
+		x = (int)m_protein->getAtoms()[i].getCoordinates().x/resolution;
+		z = (int)m_protein->getAtoms()[i].getCoordinates().z/resolution;
+		y = (int)m_protein->getAtoms()[i].getCoordinates().y/resolution;
+		m_proteinMatrix->matrix[INDEX(x, y, z, m_proteinMatrix->size)] = PROTEIN_FILL_VALUE;
+	}
+
+	for(int i=0; i<m_dna->getNumberOfAtoms(); i++) {
+			int x,y,z;
+			x = (int)m_dna->getAtoms()[i].getCoordinates().x/resolution;
+			z = (int)m_dna->getAtoms()[i].getCoordinates().z/resolution;
+			y = (int)m_dna->getAtoms()[i].getCoordinates().y/resolution;
+			m_dnaMatrix->matrix[INDEX(x, y, z, m_dnaMatrix->size)] = PROTEIN_FILL_VALUE;
+		}
+
+	// Fill values allocated. Generating surfaces
+	// If need be generate_surface(m_proteinMatrix, 0, PROTEIN_FILL_VALUE);
+	generate_surface(m_dnaMatrix, 0, DNA_FILL_VALUE);
+
+	// Setting up flags
+	m_checkFlag = true;
+	m_initFlag = true;
 }
 
 void Docker::checkConstraints() { //(TODO)
@@ -138,26 +196,26 @@ void generate_surface(SpaceMatrix* space, int thickness, int core_value) {
 	// setting the outer elements to surface elements by definition
 
 	// YZ Plane
-	for(int y = 0; y < space->size; y++) {
-		for(int z = 0; z < space->size; z++) {
-			if(space->matrix[INDEX(0, y, z, space->size)] != 0)
-				space->matrix[INDEX(0, y,z, space->size)] = 1;
+	for (int y = 0; y < space->size; y++) {
+		for (int z = 0; z < space->size; z++) {
+			if (space->matrix[INDEX(0, y, z, space->size)] != 0)
+				space->matrix[INDEX(0, y, z, space->size)] = 1;
 		}
 	}
 
 	// XZ Plane
-	for(int x = 0; x< space->size; x++) {
-			for(int z = 0; z < space->size; z++) {
-				if(space->matrix[INDEX(x, 0, z, space->size)] != 0)
-					space->matrix[INDEX(x, 0,z, space->size)] = 1;
+	for (int x = 0; x < space->size; x++) {
+		for (int z = 0; z < space->size; z++) {
+			if (space->matrix[INDEX(x, 0, z, space->size)] != 0)
+				space->matrix[INDEX(x, 0, z, space->size)] = 1;
 		}
 	}
 
 	// XY Plane
-	for(int y = 0; y < space->size; y++) {
-			for(int x= 0; x< space->size; x++) {
-				if(space->matrix[INDEX(x, y, 0, space->size)] != 0)
-					space->matrix[INDEX(x, y,0, space->size)] = 1;
+	for (int y = 0; y < space->size; y++) {
+		for (int x = 0; x < space->size; x++) {
+			if (space->matrix[INDEX(x, y, 0, space->size)] != 0)
+				space->matrix[INDEX(x, y, 0, space->size)] = 1;
 		}
 	}
 }
