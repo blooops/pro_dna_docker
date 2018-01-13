@@ -10,9 +10,9 @@
 Docker::~Docker() {
 	delete m_protein;
 	delete m_dna;
-	if(m_dnaMatrix != nullptr)
+	if (m_dnaMatrix != nullptr)
 		delete[] m_dnaMatrix->matrix;
-	if(m_proteinMatrix != nullptr)
+	if (m_proteinMatrix != nullptr)
 		delete[] m_proteinMatrix->matrix;
 }
 
@@ -73,7 +73,7 @@ void Docker::initProcedure(std::string proteinFileName,
 		return;
 	}
 
-	// Align and create space matrices:
+	// Align molecules:
 	m_proteinFeatures = m_protein->alignMolecule();
 	m_dnaFeatures = m_dna->alignMolecule();
 
@@ -82,22 +82,23 @@ void Docker::initProcedure(std::string proteinFileName,
 		return;
 	}
 
+	// Create Space Matrices (TODO)
 
 }
 
-void Docker::checkConstraints() {
+void Docker::checkConstraints() { //(TODO)
 
 }
 
-void Docker::startTimer() {
+void Docker::startTimer() { //(TODO)
 
 }
 
-void Docker::endTimer() {
+void Docker::endTimer() { //(TODO)
 
 }
 
-void Docker::logProcedureDetails(std::string filename) {
+void Docker::logProcedureDetails(std::string filename) { //(TODO)
 
 }
 
@@ -135,4 +136,28 @@ void generate_surface(SpaceMatrix* space, int thickness, int core_value) {
 	}
 
 	// setting the outer elements to surface elements by definition
+
+	// YZ Plane
+	for(int y = 0; y < space->size; y++) {
+		for(int z = 0; z < space->size; z++) {
+			if(space->matrix[INDEX(0, y, z, space->size)] != 0)
+				space->matrix[INDEX(0, y,z, space->size)] = 1;
+		}
+	}
+
+	// XZ Plane
+	for(int x = 0; x< space->size; x++) {
+			for(int z = 0; z < space->size; z++) {
+				if(space->matrix[INDEX(x, 0, z, space->size)] != 0)
+					space->matrix[INDEX(x, 0,z, space->size)] = 1;
+		}
+	}
+
+	// XY Plane
+	for(int y = 0; y < space->size; y++) {
+			for(int x= 0; x< space->size; x++) {
+				if(space->matrix[INDEX(x, y, 0, space->size)] != 0)
+					space->matrix[INDEX(x, y,0, space->size)] = 1;
+		}
+	}
 }

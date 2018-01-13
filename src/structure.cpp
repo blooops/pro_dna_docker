@@ -238,7 +238,7 @@ int Molecule::readPDBToMolecule(std::string filename) {
 
 	// First create file streams and ensure that they work:
 	std::ifstream stream(filename);
-	if (stream) { /////////////////////////////////////////////////////////////////////////////////////////////////
+	if (!stream) { /////////////////////////////////////////////////////////////////////////////////////////////////
 		FILE_IO_ERROR(filename);
 		stream.close();
 		return -1;
@@ -362,6 +362,7 @@ MoleculeFeatures Molecule::alignMolecule() {
 	// Updating the center of molecule and individual residues
 	for (int i = 0; i < m_numberOfResidues; i++)
 		m_residues[i].setCenter();
+	setCenter();
 
 	return features;
 
