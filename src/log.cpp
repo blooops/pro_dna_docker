@@ -28,6 +28,7 @@ void Logger::openStream(std::string filepath) {
 	if (m_stream.is_open())
 		m_stream.close();
 	m_stream.open(m_filename.c_str());
+	m_filename = filepath;
 }
 
 void Logger::closeStream() {
@@ -57,4 +58,8 @@ LogLevel Logger::getLogLevel() const {
 }
 void Logger::setLogLevel(LogLevel level) {
 	m_level = level;
+}
+
+void Logger::setFileLogFlag() {
+	m_fileLogFlag = true;
 }

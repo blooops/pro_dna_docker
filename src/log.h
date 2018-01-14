@@ -32,4 +32,5 @@ public:
 	void write(std::string);
 	LogLevel getLogLevel() const;
 	void setLogLevel(LogLevel level);
+	void setFileLogFlag();
 };
