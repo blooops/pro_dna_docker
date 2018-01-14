@@ -7,6 +7,7 @@
 #include "structure.h"
 #include "log.h"
 
+
 #define PROTEIN_FILL_VALUE 1
 #define DNA_FILL_VALUE -15
 
@@ -24,6 +25,8 @@ private:
 	bool m_logFlag;
 	MoleculeFeatures m_proteinFeatures;
 	MoleculeFeatures m_dnaFeatures;
+	std::clock_t m_start;
+	Logger* m_log;
 
 public:
 	~Docker();
@@ -35,9 +38,10 @@ public:
 	int getMatrixLength();
 	void initProcedure(std::string proteinFileName, std::string dnaFileName, int size);
 	void startTimer();
-	void endTimer();
-	void logProcedureDetails(std::string filename);
+	double getElapsedTime();
+	void setUpLogging(std::string filename);
 	void checkConstraints();
+	void log(std::string);
 
 };
 
@@ -47,4 +51,4 @@ void generate_surface(SpaceMatrix* space, int thickness, int core_value);
 
 // Parallel function definitions:
 
-void p_generate_surface(SpaceMatrix* space, int thickness);
+void p_generate_surface(SpaceMatrix* space, int thickness, int core_value);

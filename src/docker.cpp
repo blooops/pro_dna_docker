@@ -27,6 +27,7 @@ Docker::Docker() {
 	m_checkFlag = false;
 	m_proteinMatrix = nullptr;
 	m_dnaMatrix = nullptr;
+	m_log = new Logger;
 }
 
 void Docker::setCudaFlag(bool flag) {
@@ -95,7 +96,7 @@ void Docker::initProcedure(std::string proteinFileName, std::string dnaFileName,
 		return;
 	}
 
-	// create the space discretized matrices:(TODO)
+	// create the space discretized matrices:
 	float diameter = std::max(m_dnaFeatures.diameter,
 			m_proteinFeatures.diameter);
 	float resolution = diameter / size;
@@ -106,7 +107,7 @@ void Docker::initProcedure(std::string proteinFileName, std::string dnaFileName,
 	m_dnaMatrix->matrix = new int[size * size * size];
 	m_proteinMatrix->matrix = new int[size * size * size];
 
-	if(m_dnaMatrix == nullptr || m_proteinMatrix == nullptr) {
+	if (m_dnaMatrix == nullptr || m_proteinMatrix == nullptr) {
 		ALLOC_ERROR();
 		delete[] m_dnaMatrix->matrix;
 		delete[] m_proteinMatrix->matrix;
@@ -115,25 +116,27 @@ void Docker::initProcedure(std::string proteinFileName, std::string dnaFileName,
 	}
 
 	// Allocation was fine. Initialize matrices with 0
-	for(int i=0; i<size*size*size; i++)
+	for (int i = 0; i < size * size * size; i++)
 		m_dnaMatrix->matrix[i] = m_proteinMatrix->matrix[i] = 0;
 
 	// Assign fill values to locations of atoms in the molecules
-	for(int i=0; i<m_protein->getNumberOfAtoms(); i++) {
-		int x,y,z;
-		x = (int)m_protein->getAtoms()[i].getCoordinates().x/resolution;
-		z = (int)m_protein->getAtoms()[i].getCoordinates().z/resolution;
-		y = (int)m_protein->getAtoms()[i].getCoordinates().y/resolution;
-		m_proteinMatrix->matrix[INDEX(x, y, z, m_proteinMatrix->size)] = PROTEIN_FILL_VALUE;
+	for (int i = 0; i < m_protein->getNumberOfAtoms(); i++) {
+		int x, y, z;
+		x = (int) m_protein->getAtoms()[i].getCoordinates().x / resolution;
+		z = (int) m_protein->getAtoms()[i].getCoordinates().z / resolution;
+		y = (int) m_protein->getAtoms()[i].getCoordinates().y / resolution;
+		m_proteinMatrix->matrix[INDEX(x, y, z, m_proteinMatrix->size)] =
+		PROTEIN_FILL_VALUE;
 	}
 
-	for(int i=0; i<m_dna->getNumberOfAtoms(); i++) {
-			int x,y,z;
-			x = (int)m_dna->getAtoms()[i].getCoordinates().x/resolution;
-			z = (int)m_dna->getAtoms()[i].getCoordinates().z/resolution;
-			y = (int)m_dna->getAtoms()[i].getCoordinates().y/resolution;
-			m_dnaMatrix->matrix[INDEX(x, y, z, m_dnaMatrix->size)] = PROTEIN_FILL_VALUE;
-		}
+	for (int i = 0; i < m_dna->getNumberOfAtoms(); i++) {
+		int x, y, z;
+		x = (int) m_dna->getAtoms()[i].getCoordinates().x / resolution;
+		z = (int) m_dna->getAtoms()[i].getCoordinates().z / resolution;
+		y = (int) m_dna->getAtoms()[i].getCoordinates().y / resolution;
+		m_dnaMatrix->matrix[INDEX(x, y, z, m_dnaMatrix->size)] =
+		PROTEIN_FILL_VALUE;
+	}
 
 	// Fill values allocated. Generating surfaces
 	// If need be generate_surface(m_proteinMatrix, 0, PROTEIN_FILL_VALUE);
@@ -145,19 +148,28 @@ void Docker::initProcedure(std::string proteinFileName, std::string dnaFileName,
 }
 
 void Docker::checkConstraints() { //(TODO)
-
+	// Checks whether the currently loaded PDB data satisfies the constraints to run
+	// the docker (Error catching to prevent excessive memory leaks in case something's
+	// not right.
 }
 
-void Docker::startTimer() { //(TODO)
-
+void Docker::startTimer() {
+	m_start = std::clock();
 }
 
-void Docker::endTimer() { //(TODO)
-
+double Docker::getElapsedTime() {
+	return (std::clock() - m_start) / (double) CLOCKS_PER_SEC;
 }
 
-void Docker::logProcedureDetails(std::string filename) { //(TODO)
+void Docker::setUpLogging(std::string filename) {
+	m_log->setLogFileName(filename);
+	m_log->openStream(filename);
+	m_log->setLogLevel(LogLevel::MAX);
+	m_log->setFileLogFlag();
+}
 
+void Docker::log(std::string str) {
+	m_log->write(str);
 }
 
 // Check the neighbours of an element to see if the element is a surface element
